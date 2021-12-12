@@ -189,68 +189,6 @@ def account_number():
 
 <br>
 
-### ▶︎ 입금/출금
-
-- 입금 API는 decorator를 이용하여 계좌를 개설한 로그인 유저만 요청 할수 있게 구현 하였습니다. 
-- 0원 이상만 이상으로만 입금 하게 구현 하였습니다.
-
-```python
-if data["amount"] <= 0:
- return JsonResponse({"message" : "INVALID_INPUT"}, status=400)
-```
-
-- 출금 API 역시 decorator를 이용한 계좌를 가진 로그인 유저만 요청 할수 있게 구현 하였습니다.
-
-- 0원 이상 출금 할수 있으며 잔액 보다 많은 금액을 출금 할 수 없게 구현하였습니다.
-
-```python
-if data[“amount”] <= 0:
-
-	return JsonResponse({“message”: “INVALID_INPUT”}, status=400)
-
-if data”["amount"] > account.balance:
-s
-	return JsonR“sponse(”"m“ssage": "WRON”_REQUEST"}, status=400)
-
-```
-- 메소드 전체가 아닌 메소드의 일부분만 처리할수 있게 입금 출금 기능을 트랜잭션으로 묶어 주었습니다.
-
-```python
-with transaction.atomic():
-  account.balance += data["amount"]
-  account.save()
-  
-with transaction.atomic():
-  account.balance -= data["amount"]
-  account.save()
-```
-
-<br>
-
-### ▶︎ 거래내역
-- 모든 필터링 파라미터는 GET 요청의 쿼리 스트링을 사용합니다.
-- 거래일시에 대한 필터링을 위해 start-date와 end-date 값이 필요합니다.
-- 최신순, 과거순 정렬을 위해 order 값이 필요합니다. 
-- 거래종류는 type 값으로 지정할 수 있으며 기본값은 전체입니다.
-- 페이지네이션을 적용하였으며 100 이상의 limit을 요청하면 에러를 반환합니다.
-- 검색 시작일과 종료일이 동일하면 해당일 하루 동안의 거래내역을 필터링하기 위해 아래와 같이 `timedelta(days=1)` 을 더해주었습니다.
-
-```python
-...
-start_date = datetime.strptime(start_date, '%Y-%m-%d')
-end_date   = datetime.strptime(end_date, '%Y-%m-%d')
-            
-if end_date < start_date:
-    return JsonResponse({"message":"INVALID_DATE_RANGE"}, status=400)
-            
-if (start_date == end_date):
-    end_date += timedelta(days=1)
-
-q &= Q(created_at__range=(start_date, end_date))
-```
-
-<br>
-
 ### ▶︎ 설치 및 실행 방법
 #### - Local 개발 및 테스트 용
 1. 해당 프로젝트를 clone하고, 프로젝트 폴더로 이동한다.
